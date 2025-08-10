@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>aprenda arraylist com nosso grupinho</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* ======================= CSS DO SITE MOCHILA MÁGICA ====================== */
+    :root {
+      --azul: #0077ff;
+      --azul-escuro: #005fcc;
+      --cinza: #f0f2f5;
+      --texto: #222;
+      --branco: #fff;
+      --fundo-escuro: #1e1e2f;
+      --texto-claro: #eee;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--cinza);
+      color: var(--texto);
+      padding: 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      background: var(--fundo-escuro);
+      color: var(--texto-claro);
+      /* Descrição no modo claro (padrão) */
+      .descricao {
+        color: #111 !important;
+        transition: color 0.3s ease;
+      }
+      /* Descrição no modo escuro */
+      body.dark-mode .descricao,
+      [data-theme="dark"] .descricao {
+        color: #fff !important;
+      }
+    }
+
+    #modoToggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--branco);
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      font-size: 1.4em;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00000033;
+      z-index: 1000;
+      transition: transform 0.3s;
+    }
+
+    #modoToggle:hover {
+      transform: scale(1.1);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 2.2em;
+      margin-bottom: 8px;
+      color: var(--azul);
+      animation: flutuar 3s ease-in-out infinite;
+    }
+
+    header p {
+      max-width: 600px;
+      margin: auto;
+      font-size: 1.05em;
+      color: white !important;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: var(--branco);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px #00000010;
+      padding: 25px;
+      transition: background 0.3s;
+    }
+
+    body.dark .container {
+      background: #2e2e44;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+
+    .input-group input[type="text"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 90%;
+      max-width: 400px;
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    .inputFlash {
+      border: 2px solid #00cc66 !important;
+      box-shadow: 0 0 8px #00cc6655;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button {
+      padding: 10px 16px;
+      background: var(--azul);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px #0077ff44;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .mochila {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      background: #e7eef6;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      min-height: 60px;
+    }
+
+    body.dark .mochila {
+      background: #3c3c5a;
+    }
+
+    .item {
+      background: var(--azul);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      animation: itemFadeBounce 0.4s ease;
+    }
+
+    .log {
+      text-align: center;
+      font-size: 0.95em;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .codigo {
+      background: #1e1e2f;
+      color: #00ffe1;
+      padding: 20px;
+      border-radius: 10px;
+      font-family: monospace;
+      white-space: pre-line;
+      font-size: 0.9em;
+      box-shadow: 0 0 15px #00ffe133;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .explicacao {
+      margin-top: 30px;
+      font-size: 1em;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    body.dark .explicacao {
+      color: #ddd;
+    }
+
+    .explicacao strong {
+      color: var(--azul);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.85em;
+      color: #888;
+    }
+
+    @keyframes itemFadeBounce {
+      0% { opacity: 0; transform: translateY(-10px) scale(0.9); }
+      60% { opacity: 1; transform: translateY(2px) scale(1.05); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    @keyframes fadeOutShrink {
+      to {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+    }
+
+    @keyframes flutuar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .typing-text {
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: 3px solid var(--azul);
+      animation: typing 3.5s steps(20, end), blink 0.75s step-end infinite;
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    @keyframes blink {
+      50% { border-color: transparent }
+    }
+
+    @media (max-width: 500px) {
+      button {
+        width: 100%;
+      }
+    }
+  
+    /* Botão do modo escuro/claro */
+    #modoToggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: white;
+      border: 2px solid #ccc;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      color: #333;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    body.dark #modoToggle {
+      background: #222;
+      color: white;
+      border: 2px solid #555;
+    }
+
+    /* Texto de descrição */
+    .descricao {
+      color: white;
+      transition: color 0.3s;
+    }
+
+    body.dark .descricao {
+      color: white !important;
+    }
+  
+    body.white  #modoToggle {
+      background: #222;
+      color: black;
+      border: 2px solid #555;
+ }
+
+    /* Texto de descrição */
+    .descricao {
+      color: black;
+      transition: color 0.3s;
+    }
+
+    body.white .descricao {
+      color: black !important;
+    }
+  
+    .descricao {
+      max-width: 600px;
+      margin: auto;
+      font-size: 1.05em;
+      color: black;
+      transition: color 0.3s;
+    }
+
+    .subtitulo {
+      color: black;
+      font-size: 1.1rem;
+      margin-top: -10px;
+      text-align: center;
+      font-weight: 500;
+      opacity: 1 !important; /* força a visibilidade */
+    }
+    /* Modo claro */
+    [data-theme="light"] .descricao {
+      color: #111;
+    }
+
+    /* Modo escuro */
+    [data-theme="dark"] .descricao {
+      color: #fff;
+    }
+    /* Descrição padrão — modo claro */
+    .descricao {
+      color: #111; /* preto suave */
+    }
+    .descricao p {
+      color: black;
+    }
+    /* Quando estiver no modo escuro */
+    .dark-mode .descricao {
+      color: #fff;
+    }
+    body.dark .descricao {
+      color: black;
+    }
+    body.dark .descricao {
+      color: black;
+    }
+
+    body:not(.dark) .descricao {
+      color: black;
+    }
+
+
+    /* ======================= CSS DO FLASHCARDS ====================== */
+    /* mantendo exatamente como veio, só adicionei prefixo pra evitar conflito */
+    #flashcardsBody {
+      background: #0077ff;
+      color: white;
+      padding: 20px;
+      margin-top: 50px;
+      text-align: center;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      border-radius: 12px;
+    }
+    #flashcardsBody h1 {
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+    #flashcardsBody .controls {
+      margin-bottom: 20px;
+    }
+    #flashcardsBody button {
+      background: #00c6ff;
+      border: none;
+      padding: 10px 20px;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    #flashcardsBody button:hover {
+      background: #0072ff;
+    }
+    #flashcardsBody .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 1100px;
+      margin: auto;
+    }
+    #flashcardsBody .card {
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    #flashcardsBody .card-inner {
+      position: relative;
+      width: 100%;
+      padding-top: 70%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease-in-out;
+    }
+    #flashcardsBody .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    #flashcardsBody .card-front, #flashcardsBody .card-back {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      box-sizing: border-box;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    #flashcardsBody .card-front {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: white;
+      font-weight: bold;
+      font-size: 1.3em;
+    }
+    #flashcardsBody .card-back {
+      background: linear-gradient(135deg, #ff512f, #dd2476);
+      transform: rotateY(180deg);
+      font-size: 1.1em;
+    }
+
+  </style>
+</head>
+<body>
+  <button id="modoToggle" onclick="toggleModo()">🌙</button>
+
+  <!-- === MOCHILA MÁGICA === -->
+  <header>
+    <h1><span class="typing-text">🎒 Mochila Mágica
+    </span></h1>
+    <p class="descricao" style="color: black; opacity: 1; text-align: center;">
+      <h3>Uma forma simples e interativa de entender o que é um <strong>ArrayList</strong> em Java.</h3>
+    </p>
+  </header>
+
+  <div class="container">
+    <div class="input-group">
+      <input type="text" id="itemInput" placeholder="Digite um item..." />
+      <div class="buttons">
+        <button onclick="addItem()">Adicionar</button>
+        <button onclick="removeLast()">Remover último</button>
+        <button onclick="clearAll()">Limpar tudo</button>
+      </div>
+    </div>
+
+    <div class="mochila" id="mochila"></div>
+    <div class="log" id="log"></div>
+
+    <div class="codigo" id="codigoJava"></div>
+
+    <div class="explicacao">
+      <h2>O que seria um ArrayList?</h2>
+      <p>Um <strong>ArrayList</strong> é como uma mochila mágica no Java. Ela não tem tamanho fixo, então você pode colocar quantas coisas quiser lá dentro.</p>
+      <p>Cada vez que você clica em <strong>“Adicionar”</strong>, é como se colocasse um novo item na mochila com o comando <code>add()</code>.</p>
+      <p>Quando clica em um item da mochila, você está usando <code>get()</code> — que só olha o que está lá dentro, sem tirar nada.</p>
+      <p>Se clicar em <strong>“Remover último”</strong>, está usando o <code>remove()</code>, que tira o que foi colocado por último.</p>
+ <p>Isso é útil para programadores que querem guardar dados e acessar depois, tipo uma lista de compras, tarefas, nomes, qualquer coisa.</p>
+      <p>Agora, com essa Mochila Mágica, você não só entende como funciona, como vê acontecer em tempo real!</p>
+    </div>
+  </div>
+
+  <script>
+    // Seu script Mochila Mágica, intacto
+    const mochilaDiv = document.getElementById('mochila');
+    const log = document.getElementById('log');
+    const codigo = document.getElementById('codigoJava');
+    const input = document.getElementById('itemInput');
+    const toggle = document.getElementById('modoToggle');
+
+    let itens = [];
+
+    function atualizarVisual() {
+      mochilaDiv.innerHTML = "";
+      itens.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerText = item;
+        div.onclick = () => {
+          log.innerText = get(${index}) → "${item}";
+        };
+        mochilaDiv.appendChild(div);
+      });
+    }
+
+    function atualizarCodigo() {
+      let linhas = import java.util.ArrayList;\n\npublic class Mochila {\n    public static void main(String[] args) {\n        ArrayList<String> mochila = new ArrayList<>();\n;
+      itens.forEach(item => {
+        linhas += `        mochila.add("${item}");\n`;
+      });
+      linhas += `    }\n}`;
+      let i = 0;
+      const printar = () => {
+        if (i <= linhas.length) {
+          codigo.innerHTML = <code>${linhas.substring(0, i)}</code>;
+          i++;
+          requestAnimationFrame(printar);
+        }
+      };
+      printar();
+    }
+
+    function addItem() {
+      const valor = input.value.trim();
+      if (valor !== "") {
+        input.classList.add("inputFlash");
+        setTimeout(() => input.classList.remove("inputFlash"), 1000);
+        itens.push(valor);
+        atualizarVisual();
+        atualizarCodigo();
+        log.innerText = add("${valor}") — Adicionado à mochila;
+        input.value = "";
+      }
+    }
+
+    function removeLast() {
+      if (itens.length > 0) {
+        const divs = mochilaDiv.querySelectorAll('.item');
+        const ultimo = divs[divs.length - 1];
+        const removido = itens[itens.length - 1];
+        if (ultimo) {
+          ultimo.style.animation = "fadeOutShrink 0.3s forwards";
+          setTimeout(() => {
+            itens.pop();
+            atualizarVisual();
+            atualizarCodigo();
+            log.innerText = remove("${removido}") — Último item removido;
+          }, 300);
+        }
+      } else {
+        log.innerText = "A mochila está vazia.";
+      }
+    }
+
+    function clearAll() {
+      itens = [];
+      atualizarVisual();
+      atualizarCodigo();
+      log.innerText = "A mochila foi esvaziada!";
+    }
+
+    function toggleModo() {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      toggle.innerText = isDark ? '☀' : '🌙';
+      localStorage.setItem('modoEscuro', isDark ? 'sim' : 'nao');
+    }
+
+    window.onload = () => {
+      const preferencia = localStorage.getItem('modoEscuro');
+      if (preferencia === 'sim') {
+        document.body.classList.add('dark');
+        toggle.innerText = '☀';
+      }
+    }
+
+    atualizarCodigo();
+  </script>
+
+  <!-- ====================== AQUI COMEÇA O FLASHCARDS ====================== -->
+  <div id="flashcardsBody">
+    <h1>Aprendendo um pouco mais sobre ArrayList</h1>
+    <div class="controls">
+      <button id="shuffleBtn">🔀 Embaralhar</button>
+    </div>
+    <div class="cards-container" id="cardsContainer"></div>
+    <audio id="flipSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+    <p>Explicado com a metafora de caixa e brinquedos para facilitar entendimento. </p>
+    <h4>Agradecemos a atenção!</h4>
+   </div>
+  
+  <script>
+    // Script flashcards. só prefixado os seletores com #flashcardsBody
+    const terms = [
+      { term: "ArrayList", desc: "Uma caixa mágica que guarda várias coisas e pode crescer ou encolher quando você quiser." },
+      { term: "add()", desc: "Coloca um novo brinquedo dentro da caixa." },
+      { term: "get()", desc: "Abre a caixa e pega o brinquedo que está em uma posição específica." },
+      { term: "set()", desc: "Troca o brinquedo de um lugar por outro novo." },
+      { term: "remove()", desc: "Tira um brinquedo da caixa." },
+      { term: "size()", desc: "Conta quantos brinquedos estão dentro da caixa." },
+      { term: "clear()", desc: "Esvazia a caixa e tira todos os brinquedos." },
+      { term: "isEmpty()", desc: "Olha se a caixa está vazia." },
+      { term: "contains()", desc: "Vê se um brinquedo específico está na caixa." },
+      { term: "indexOf()", desc: "Descobre em qual lugar está o brinquedo pela primeira vez." },
+      { term: "lastIndexOf()", desc: "Descobre onde está o brinquedo pela última vez." },
+      { term: "toArray()", desc: "Transforma a caixa mágica em uma caixa comum (lista simples)." }
+    ];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function renderCards() {
+      const container = document.getElementById("cardsContainer");
+      container.innerHTML = "";
+      const flipSound = document.getElementById("flipSound");
+
+      terms.forEach(item => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.innerHTML = `
+          <div class="card-inner">
+            <div class="card-front">${item.term}</div>
+            <div class="card-back">${item.desc}</div>
+          </div>
+        `;
+        card.addEventListener("click", () => {
+          flipSound.currentTime = 0;
+          flipSound.play();
+          card.classList.toggle("flipped");
+        });
+        container.appendChild(card);
+      });
+    }
+
+    document.getElementById("shuffleBtn").addEventListener("click", () => {
+      shuffle(terms);
+      renderCards();
+    });
+
+    shuffle(terms);
+    renderCards();
+  </script>
+  
+  <footer>
+    <p>3° Informática B</p>
+    <p>Estudantes: Maria Cecília, Débora, Eduarda, Jessica e Natã.</p>
+    <p>Desenvolvedora: @maria_mfcosta.</p>
+  </footer>
+  
+</body>
+</html>
